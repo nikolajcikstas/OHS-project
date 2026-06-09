@@ -1,0 +1,16 @@
+export const figmaAssets = {
+  videoFrame: '/assets/figma/video-frame.png',
+  videoControls: '/assets/figma/video-controls.png',
+  timelinePlayer: '/assets/figma/timeline-player.png',
+  playerFull: '/assets/figma/player-full.png',
+  tableThumb: '/assets/figma/video-frame.png',
+  statusL1: '/assets/figma/status-l1.png',
+  statusL2: '/assets/figma/status-l2.png',
+  statusL3Eval: '/assets/figma/status-l3-eval.png',
+  infoPanel: '/assets/figma/info-panel.png',
+  screenHome: '/assets/figma/screen-home.png',
+  screenDiscoveries: '/assets/figma/screen-discoveries.png',
+  screenDiscoveryDetail: '/assets/figma/screen-discovery-detail.png',
+  screenStatistics: '/assets/figma/screen-statistics.png',
+  screenNotifications: '/assets/figma/screen-notifications.png',
+} as const;
