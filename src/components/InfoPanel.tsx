@@ -1,10 +1,13 @@
-import type { DiscoveryDetail } from '@/types/discovery';
+import type { DiscoveryDetail, ResponseLine } from '@/types/discovery';
+import { shouldShowDetectionDateField } from '@/utils/discoveryPresentation';
 
 interface InfoPanelProps {
   discovery: DiscoveryDetail;
+  viewerLine?: ResponseLine;
 }
 
-export function InfoPanel({ discovery }: InfoPanelProps) {
+export function InfoPanel({ discovery, viewerLine = 'L1' }: InfoPanelProps) {
+  const showDetectionDate = shouldShowDetectionDateField(viewerLine);
   return (
     <aside className="figma-info">
       <h2 className="figma-info__title">{discovery.violationType}</h2>
@@ -19,13 +22,32 @@ export function InfoPanel({ discovery }: InfoPanelProps) {
         <span className="figma-info__value">{discovery.id}</span>
       </div>
 
-      <div className="figma-info__row">
-        <span className="figma-info__label">Дата и время</span>
-        <span className="figma-info__value">
-          {discovery.detectedAt}
-          <span className="figma-info__sub">{discovery.detectedAtRelative}</span>
-        </span>
-      </div>
+      {showDetectionDate ? (
+        <div className="figma-info__row">
+          <span className="figma-info__label">Дата и время</span>
+          <span className="figma-info__value">
+            {discovery.detectedAt}
+            <span className="figma-info__sub">{discovery.detectedAtRelative}</span>
+          </span>
+        </div>
+      ) : (
+        <div className="figma-info__row">
+          <span className="figma-info__label">Поступило</span>
+          <span className="figma-info__value">
+            {discovery.receivedAt}
+            {discovery.receivedAtRelative && (
+              <span className="figma-info__sub">{discovery.receivedAtRelative}</span>
+            )}
+          </span>
+        </div>
+      )}
+
+      {showDetectionDate && (
+        <div className="figma-info__row">
+          <span className="figma-info__label">Поступило</span>
+          <span className="figma-info__value">{discovery.receivedAt}</span>
+        </div>
+      )}
 
       <div className="figma-info__row">
         <span className="figma-info__label">Тип</span>
@@ -58,11 +80,6 @@ export function InfoPanel({ discovery }: InfoPanelProps) {
           {discovery.cameraId}
           <span className="figma-info__sub">{discovery.cameraName}</span>
         </span>
-      </div>
-
-      <div className="figma-info__row">
-        <span className="figma-info__label">Поступило</span>
-        <span className="figma-info__value">{discovery.receivedAt}</span>
       </div>
 
       <div className="figma-info__row">

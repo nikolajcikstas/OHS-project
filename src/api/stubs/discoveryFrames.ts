@@ -4,8 +4,8 @@ export const DISCOVERY_FRAME_BEFORE = 30;
 export const DISCOVERY_FRAME_AFTER = 30;
 export const DISCOVERY_FRAME_TOTAL = DISCOVERY_FRAME_BEFORE + 1 + DISCOVERY_FRAME_AFTER;
 
-const SOURCE_W = 1168;
-const SOURCE_H = 654;
+const SOURCE_W = 1920;
+const SOURCE_H = 1080;
 
 /** Индексы кадров с детекцией (плато на таймлайне) */
 const EVENT_START_OFFSET = -2;
@@ -46,7 +46,7 @@ function stubDetectionBoxes(frameIndex: number, keyIndex: number): DetectionItem
     {
       class: 'no_helmet',
       confidence: Math.min(0.97, 0.9 + Math.abs(offset) * 0.008),
-      bbox: [372 + offset * 14, 148 + offset * 3, 112, 268],
+      bbox: [1580 + offset * 6, 700 + offset * 2, 150, 280],
     },
   ];
 
@@ -54,7 +54,7 @@ function stubDetectionBoxes(frameIndex: number, keyIndex: number): DetectionItem
     boxes.push({
       class: 'person',
       confidence: 0.83,
-      bbox: [512 + offset * 10, 188, 98, 232],
+      bbox: [1560 + offset * 5, 720, 190, 340],
     });
   }
 
@@ -62,7 +62,7 @@ function stubDetectionBoxes(frameIndex: number, keyIndex: number): DetectionItem
     boxes.push({
       class: 'no_vest',
       confidence: 0.71,
-      bbox: [388 + offset * 12, 292, 88, 132],
+      bbox: [1590 + offset * 4, 860, 120, 150],
     });
   }
 
@@ -81,8 +81,11 @@ export function buildDiscoveryFrameDetail(
     ? '2027-03-13T07:53:35.000Z'
     : keyTime.toISOString();
 
+  /** Кадры из test_video.mp4: 0.5 fps → шаг 2 с */
+  const SECONDS_PER_FRAME = 2;
+
   const allFrames: Frame[] = Array.from({ length: DISCOVERY_FRAME_TOTAL }, (_, i) => {
-    const offsetSec = i - DISCOVERY_FRAME_BEFORE;
+    const offsetSec = (i - DISCOVERY_FRAME_BEFORE) * SECONDS_PER_FRAME;
     const recorded = shiftTime(keyIso, offsetSec);
     const stubBoxes = stubDetectionBoxes(i, DISCOVERY_FRAME_BEFORE);
     return {

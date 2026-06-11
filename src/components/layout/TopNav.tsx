@@ -1,5 +1,6 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import type { UserProfile } from '@/types/discovery';
+import { lineLabelCyrillic } from '@/utils/discoveryPresentation';
 
 type Tab = 'all' | 'pending' | 'expiring';
 type NavMode = 'home' | 'discoveries' | 'detail' | 'default';
@@ -159,7 +160,7 @@ export function TopNav({
           <div className="top-nav__profile">
             <div className="avatar">{user.initials}</div>
             <span className="top-nav__profile-name">
-              {user.name} • {user.line}
+              {user.name} • {lineLabelCyrillic(user.line)}
             </span>
             <span className="top-nav__alert" aria-label="Предупреждение">
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none">

@@ -40,6 +40,8 @@ export interface Discovery {
   detectedAt: string;
   detectedAtRelative: string;
   receivedAt: string;
+  /** Относительное время поступления (для колонки «Поступило» у L2/L3) */
+  receivedAtRelative?: string;
   deadlineAt: string;
   deadlineTimer: string;
   deadlineSub?: string;
