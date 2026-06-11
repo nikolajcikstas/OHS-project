@@ -21,6 +21,17 @@ const REQUIRED_UI = [
   'Отправить',
   'Пресеты фильтров',
   'Обнаружения',
+  '3 проблемы',
+  'Ранее сегодня',
+  'Позвоните в поддержку',
+  '+375 44 123-45-67',
+  'необработанных обнаружений',
+  'истекающих обнаружений',
+  'Все необработанные обнаружения',
+  'Все истекающие обнаружения',
+  'Все системные сообщения',
+  'Цех №1 • Cam005 • Камера у входа',
+  '🔥 1 минуту назад',
 ];
 
 const COMMENT_RULES = [
@@ -29,6 +40,11 @@ const COMMENT_RULES = [
   { id: 'hide-status-L2L3', path: 'utils/discoveryPresentation.ts', pattern: /showStatusColumn/ },
   { id: 'submit-disabled', path: 'components/StatusTimeline.tsx', pattern: /disabled=\{!choice\}/ },
   { id: 'buffered-frames', path: 'components/BufferedFrameImage.tsx', pattern: /onload/ },
+  { id: 'home-active-problems', path: 'pages/HomePage.tsx', pattern: /activeProblems/ },
+  { id: 'home-discovery-id-line', path: 'pages/HomePage.tsx', pattern: /home-discovery-row__id/ },
+  { id: 'home-card-footer', path: 'pages/HomePage.tsx', pattern: /card__footer/ },
+  { id: 'sidebar-clock-badge', path: 'components/AppSidebar.tsx', pattern: /badge: 2/ },
+  { id: 'nav-alert-count', path: 'components/layout/TopNav.tsx', pattern: /top-nav__alert-count/ },
 ];
 
 function readAllSrc() {

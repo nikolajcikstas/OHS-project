@@ -12,6 +12,7 @@ interface TopNavProps {
   activeTab?: Tab;
   counter?: { current: number; total: number };
   notificationCount?: number;
+  alertCount?: number;
 }
 
 const tabs: { id: Tab; label: string; suffix?: string }[] = [
@@ -43,7 +44,8 @@ export function TopNav({
   showDiscoveryTabs = false,
   activeTab = 'all',
   counter,
-  notificationCount = 5,
+  notificationCount = 4,
+  alertCount = 4,
 }: TopNavProps) {
   const location = useLocation();
   const navigate = useNavigate();
@@ -81,7 +83,11 @@ export function TopNav({
                 {title}
               </Link>
             ) : (
-              <span className={`top-nav__title${mode === 'detail' ? ' top-nav__title--detail' : ''}`}>{title}</span>
+              <span
+                className={`top-nav__title${mode === 'home' ? ' top-nav__title--home' : ''}${mode === 'detail' ? ' top-nav__title--detail' : ''}`}
+              >
+                {title}
+              </span>
             )}
 
             {showDiscoveryTabs && (
@@ -140,35 +146,39 @@ export function TopNav({
             </button>
           )}
 
-          <Link to="/notifications" className="top-nav__bell" aria-label="Уведомления">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <path
-                d="M10 2.5a4.5 4.5 0 0 1 4.5 4.5v2.8l1.5 2.5H4l1.5-2.5V7A4.5 4.5 0 0 1 10 2.5Z"
-                stroke="currentColor"
-                strokeWidth="1.4"
-                strokeLinejoin="round"
-              />
-              <path d="M8 15.5a2 2 0 0 0 4 0" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-            </svg>
-            {notificationCount > 0 && mode !== 'discoveries' && (
-              <span className="top-nav__badge">{notificationCount}</span>
-            )}
-          </Link>
+          {mode !== 'home' && (
+            <Link to="/notifications" className="top-nav__bell" aria-label="Уведомления">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path
+                  d="M10 2.5a4.5 4.5 0 0 1 4.5 4.5v2.8l1.5 2.5H4l1.5-2.5V7A4.5 4.5 0 0 1 10 2.5Z"
+                  stroke="currentColor"
+                  strokeWidth="1.4"
+                  strokeLinejoin="round"
+                />
+                <path d="M8 15.5a2 2 0 0 0 4 0" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+              </svg>
+              {notificationCount > 0 && mode !== 'discoveries' && (
+                <span className="top-nav__badge">{notificationCount}</span>
+              )}
+            </Link>
+          )}
 
-          <div className="top-nav__divider" />
+          {mode !== 'home' && <div className="top-nav__divider" />}
 
           <div className="top-nav__profile">
             <div className="avatar">{user.initials}</div>
             <span className="top-nav__profile-name">
               {user.name} • {lineLabelCyrillic(user.line)}
             </span>
-            <span className="top-nav__alert" aria-label="Предупреждение">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <path d="M8 2 14 13H2L8 2Z" stroke="#ef4444" strokeWidth="1.3" strokeLinejoin="round" />
-                <path d="M8 6v3" stroke="#ef4444" strokeWidth="1.3" strokeLinecap="round" />
-                <circle cx="8" cy="11.5" r="0.8" fill="#ef4444" />
-              </svg>
-            </span>
+            {alertCount > 0 && (
+              <span className="top-nav__alert" aria-label={`${alertCount} предупреждений`}>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M8 2 14 13H2L8 2Z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" />
+                  <path d="M8 6v3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+                </svg>
+                <span className="top-nav__alert-count">{alertCount}</span>
+              </span>
+            )}
           </div>
         </div>
       </div>

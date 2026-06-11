@@ -23,6 +23,13 @@ export interface SystemEvent {
   type: 'error' | 'warning' | 'success';
 }
 
+export interface ActiveProblem {
+  id: string;
+  time: string;
+  message: string;
+  icon: 'cloud' | 'camera';
+}
+
 export interface Discovery {
   id: string;
   title: string;
@@ -111,6 +118,7 @@ export interface ChartSeries {
 
 export interface DashboardData {
   problemsCount: number;
+  activeProblems: ActiveProblem[];
   events: SystemEvent[];
   unprocessedCount: number;
   expiringCount: number;

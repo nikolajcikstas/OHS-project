@@ -236,8 +236,110 @@ const moreDiscoveries: Discovery[] = [
 
 export const stubDiscoveries: Discovery[] = [discoveryA79096, ...moreDiscoveries.filter((d) => d.id !== 'A79096')];
 
+const homeBase = {
+  violationCategory: 'Средства индивидуальной защиты',
+  objectName: 'Осташковичи 123',
+  master: 'Иванов С.\u2009Р.',
+  brigade: '№\u20092',
+  zone: 'Цех №1',
+  detectionZone: 'Зона №1',
+  cameraId: 'CAM005',
+  cameraName: 'Камера у\u00a0входа',
+  locationLine: 'Цех №1 • Cam005 • Камера у\u00a0входа',
+  status: 'pending' as const,
+  statusLabel: 'Ожидает обработки',
+  statusKind: 'pending' as const,
+  violators: '—',
+  line: 'L1' as const,
+  thumbnailUrl: thumb,
+};
+
+const homeUnprocessed: Discovery[] = [
+  {
+    ...homeBase,
+    id: 'A79096',
+    title: 'Обнаружение A79096 • Нет каски',
+    shortTitle: 'Нет каски',
+    violationType: 'Нет каски',
+    suspectedViolation: 'Нет каски',
+    detectedAt: '13.04.2026, 13:04',
+    detectedAtRelative: '🔥 1 минуту назад',
+    receivedAt: '13.04.2026, 13:04',
+    deadlineAt: 'до 14.04.2026, 13:04',
+    deadlineTimer: '🔥 10:22',
+  },
+  {
+    ...homeBase,
+    id: 'A79108',
+    title: 'Обнаружение A79108',
+    shortTitle: 'Нахождение на столе ротора',
+    violationType: 'Нахождение на столе ротора',
+    suspectedViolation: 'Нахождение на столе ротора при работе телескопической системы при её подъёме',
+    violationCategory: 'Запрещённые зоны',
+    detectedAt: '13.04.2026, 09:09',
+    detectedAtRelative: '4 часа назад',
+    receivedAt: '13.04.2026, 09:09',
+    deadlineAt: 'до 14.04.2026, 09:09',
+    deadlineTimer: '🔥 28:10',
+  },
+  {
+    ...homeBase,
+    id: 'A79117',
+    title: 'Обнаружение A79117',
+    shortTitle: 'Нет заводского обтюратора',
+    violationType: 'Нет заводского обтюратора',
+    suspectedViolation: 'Нет заводского обтюратора (модуля) на инструменте, оставленном без присмотра',
+    violationCategory: 'Технические операции',
+    detectedAt: '12.04.2026, 16:55',
+    detectedAtRelative: 'Вчера',
+    receivedAt: '12.04.2026, 16:55',
+    deadlineAt: 'до 13.04.2026, 16:55',
+    deadlineTimer: '🔥 12:45',
+  },
+  {
+    ...homeBase,
+    id: 'A79122',
+    title: 'Обнаружение A79122',
+    shortTitle: 'Работа без удерживающих металлических крючков',
+    violationType: 'Работа без удерживающих металлических крючков',
+    suspectedViolation: 'Работа без удерживающих металлических крючков',
+    violationCategory: 'Технические операции',
+    detectedAt: '10.04.2026, 13:04',
+    detectedAtRelative: '3 дня назад',
+    receivedAt: '10.04.2026, 13:04',
+    deadlineAt: 'до 11.04.2026, 13:04',
+    deadlineTimer: '🔥 28:10',
+  },
+  {
+    ...homeBase,
+    id: 'A79124',
+    title: 'Обнаружение A79124',
+    shortTitle: 'Работа без удерживающих металлических крючков',
+    violationType: 'Работа без удерживающих металлических крючков',
+    suspectedViolation: 'Работа без удерживающих металлических крючков',
+    violationCategory: 'Технические операции',
+    detectedAt: '10.04.2026, 13:04',
+    detectedAtRelative: '3 дня назад',
+    receivedAt: '10.04.2026, 13:04',
+    deadlineAt: 'до 11.04.2026, 13:04',
+    deadlineTimer: '🔥 28:10',
+  },
+];
+
+const homeExpiring: Discovery[] = homeUnprocessed.map((item, index) => ({
+  ...item,
+  deadlineAt: 'до 13.04.2026, 13:04',
+  deadlineTimer: index === 0 ? '🔥 10:22' : '',
+  deadlineSub: index === 1 ? 'Осталось 2 часа' : index === 2 ? 'Осталось 3 часа' : index === 3 ? 'Осталось 3 часа' : 'Осталось 3 часа',
+}));
+
 export const stubDashboard: DashboardData = {
   problemsCount: 3,
+  activeProblems: [
+    { id: 'p1', time: '10:34', message: 'Потеряна связь с сервером', icon: 'cloud' },
+    { id: 'p2', time: '10:21', message: 'Потеряна связь с камерой CAM005', icon: 'camera' },
+    { id: 'p3', time: '10:11', message: 'Потеряна связь с камерой CAM005', icon: 'camera' },
+  ],
   events: [
     { id: '1', time: '10:34', message: 'Восстановлена связь с камерой CAM005', type: 'success' },
     { id: '2', time: '10:23', message: 'Потеряна связь с сервером', type: 'error' },
@@ -246,8 +348,8 @@ export const stubDashboard: DashboardData = {
   ],
   unprocessedCount: 10,
   expiringCount: 12,
-  unprocessed: stubDiscoveries.filter((d) => d.statusKind === 'pending').slice(0, 4),
-  expiring: stubDiscoveries.filter((d) => d.status === 'expiring' || d.deadlineSub).slice(0, 4),
+  unprocessed: homeUnprocessed,
+  expiring: homeExpiring,
 };
 
 export function getDiscoveriesList(tab: 'all' | 'pending' | 'expiring'): DiscoveriesListData {

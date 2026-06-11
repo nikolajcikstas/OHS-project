@@ -1,5 +1,5 @@
 :root {
-  --bg-page: #f7f8fb;
+  --bg-page: #f8f9fb;
   --bg-surface: #ffffff;
   --bg-dark: #0a0c10;
   --bg-info: #0e1017;
@@ -129,7 +129,8 @@ button {
   color: var(--text-muted);
 }
 
-.top-nav__title--active {
+.top-nav__title--active,
+.top-nav__title--home {
   color: var(--text-primary);
 }
 
@@ -282,17 +283,37 @@ button {
 }
 
 .top-nav__alert {
+  position: relative;
   display: grid;
   place-items: center;
   flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  color: var(--danger);
+}
+
+.top-nav__alert-count {
+  position: absolute;
+  top: -4px;
+  right: -8px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: var(--danger);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
 }
 
 .avatar {
   width: 36px;
   height: 36px;
   border-radius: 999px;
-  background: linear-gradient(135deg, #dbe4ff, #c7d2fe);
-  color: var(--accent);
+  background: linear-gradient(135deg, #e9d5ff, #c4b5fd);
+  color: #6d28d9;
   font-size: 12px;
   font-weight: 700;
   display: grid;
@@ -320,6 +341,7 @@ button {
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
   overflow: hidden;
+  box-shadow: 0 1px 2px rgba(14, 16, 23, 0.04);
 }
 
 .card__header {
@@ -340,6 +362,25 @@ button {
 
 .card__body {
   padding: 0;
+}
+
+.card__header--plain {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.card__footer {
+  padding: 12px 20px 16px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.card__footer--inline {
+  border-top: none;
+  padding-top: 0;
+}
+
+.card__footer-btn {
+  font-weight: 500;
 }
 
 .section-stack {
@@ -392,6 +433,11 @@ button {
   font-size: 14px;
 }
 
+.system-state__icon--danger {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
 .system-state__text {
   font-size: 19px;
   font-weight: 720;
@@ -415,8 +461,9 @@ button {
 
 .event-item {
   display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 12px;
+  grid-template-columns: auto 1fr auto;
+  gap: 10px 12px;
+  align-items: center;
   padding: 12px 20px;
   border-top: 1px solid var(--border-subtle);
 }
@@ -1252,20 +1299,25 @@ button {
   border-top: 1px solid var(--border-subtle);
 }
 
-.problems-list__icon {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
+.problems-list__glyph {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
   flex-shrink: 0;
 }
 
-.problems-list__icon--error {
-  background: var(--danger);
+.problems-list__glyph--cloud {
+  color: var(--text-secondary);
+}
+
+.problems-list__glyph--camera {
+  color: var(--danger);
 }
 
 .problems-list__message {
   font-size: 14px;
-  color: var(--danger);
+  color: var(--text-primary);
 }
 
 .problems-list__time {
@@ -1282,6 +1334,17 @@ button {
   font-size: 13px;
   color: var(--text-secondary);
   border-top: 1px solid var(--border-subtle);
+}
+
+.support-line__icon {
+  display: grid;
+  place-items: center;
+  color: var(--text-muted);
+}
+
+.support-line__phone {
+  color: var(--text-primary);
+  font-weight: 500;
 }
 
 .event-dot {
@@ -1303,13 +1366,8 @@ button {
   background: var(--warning);
 }
 
-.event-item {
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-}
-
-.problems-log .btn--outline {
-  margin: 12px 20px 16px;
+.problems-log .card__footer {
+  border-top: none;
 }
 
 .home-discovery-list {
@@ -1346,18 +1404,26 @@ button {
 
 .home-discovery-row__title {
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
+  line-height: 1.35;
 }
 
-.home-discovery-row__meta {
+.home-discovery-row__id,
+.home-discovery-row__location {
   font-size: 12px;
   color: var(--text-muted);
   margin-top: 2px;
+  line-height: 1.35;
 }
 
 .home-discovery-row__time {
   text-align: right;
   font-size: 13px;
+  min-width: 132px;
+}
+
+.home-discovery-row__datetime {
+  color: var(--text-secondary);
 }
 
 .home-discovery-row__relative {
@@ -1367,8 +1433,12 @@ button {
 }
 
 .home-discovery-row__relative.is-urgent {
-  color: var(--danger);
+  color: var(--warning);
   font-weight: 600;
+}
+
+.home-discovery-row__relative.is-deadline {
+  color: var(--danger);
 }
 
 /* Discoveries table */

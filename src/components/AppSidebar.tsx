@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 const items = [
   { to: '/', icon: 'home', label: 'Главная' },
   { to: '/discoveries', icon: 'users', label: 'Обнаружения', badge: 4 },
-  { to: '/discoveries?tab=all', icon: 'clock', label: 'История' },
+  { to: '/discoveries?tab=all', icon: 'clock', label: 'История', badge: 2 },
 ];
 
 function Icon({ name }: { name: string }) {
