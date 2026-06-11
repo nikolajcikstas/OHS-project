@@ -8,7 +8,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "generate:frames": "node scripts/generate-discovery-frames.mjs",
-    "fetch:figma": "node scripts/fetch-figma-spec.mjs"
+    "fetch:figma": "node scripts/fetch-figma-spec.mjs",
+    "verify:figma": "node scripts/verify-figma-parity.mjs"
   },
   "dependencies": {
     "react": "^19.1.0",

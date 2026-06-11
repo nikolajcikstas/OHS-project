@@ -29,12 +29,20 @@ const FILES = [
   },
 ];
 
-async function fetchJson(url, token) {
+async function fetchJson(url, token, attempt = 0) {
   const res = await fetch(url, { headers: { 'X-Figma-Token': token } });
   const json = await res.json();
+  if (res.status === 429 && attempt < 4) {
+    const wait = 8000 * (attempt + 1);
+    console.warn(`Rate limited, retry in ${wait / 1000}s…`);
+    await sleep(wait);
+    return fetchJson(url, token, attempt + 1);
+  }
   if (!res.ok) throw new Error(`${url}: ${JSON.stringify(json)}`);
   return json;
 }
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 async function main() {
   for (const file of FILES) {
@@ -45,11 +53,14 @@ async function main() {
     }
 
     const nodes = file.nodes.join(',');
-    const [fileJson, commentsJson, nodesJson] = await Promise.all([
-      fetchJson(`https://api.figma.com/v1/files/${file.key}?depth=2`, token),
-      fetchJson(`https://api.figma.com/v1/files/${file.key}/comments`, token),
-      fetchJson(`https://api.figma.com/v1/files/${file.key}/nodes?ids=${encodeURIComponent(nodes)}&depth=6`, token),
-    ]);
+    const fileJson = await fetchJson(`https://api.figma.com/v1/files/${file.key}?depth=2`, token);
+    await sleep(4000);
+    const commentsJson = await fetchJson(`https://api.figma.com/v1/files/${file.key}/comments`, token);
+    await sleep(4000);
+    const nodesJson = await fetchJson(
+      `https://api.figma.com/v1/files/${file.key}/nodes?ids=${encodeURIComponent(nodes)}&depth=6`,
+      token,
+    );
 
     await fs.writeFile(path.join(root, file.outFile), JSON.stringify(fileJson, null, 2));
     await fs.writeFile(path.join(root, file.commentsFile), JSON.stringify(commentsJson, null, 2));

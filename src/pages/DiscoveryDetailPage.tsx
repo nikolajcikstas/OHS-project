@@ -68,12 +68,9 @@ export function DiscoveryDetailPage() {
 
 
 
-  const handleSubmit = async (isViolation: boolean) => {
-
+  const handleSubmit = async (isViolation: boolean, _comment: string) => {
     await updateDiscoveryStatus(discovery.id, isViolation ? 'Нарушение' : 'Ошибка ИИ');
-
     showToast('Отправлено', isViolation ? 'Отмечено как нарушение' : 'Отмечено как не нарушение', 'success');
-
   };
 
 

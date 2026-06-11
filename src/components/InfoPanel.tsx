@@ -33,12 +33,7 @@ export function InfoPanel({ discovery, viewerLine = 'L1' }: InfoPanelProps) {
       ) : (
         <div className="figma-info__row">
           <span className="figma-info__label">Поступило</span>
-          <span className="figma-info__value">
-            {discovery.receivedAt}
-            {discovery.receivedAtRelative && (
-              <span className="figma-info__sub">{discovery.receivedAtRelative}</span>
-            )}
-          </span>
+          <span className="figma-info__value">{discovery.receivedAt}</span>
         </div>
       )}
 

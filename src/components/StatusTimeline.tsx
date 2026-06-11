@@ -1,20 +1,37 @@
 import { useState } from 'react';
 import { figmaAssets } from '@/assets/figma';
 import type { DiscoveryDetail } from '@/types/discovery';
+import { lineLabelCyrillic } from '@/utils/discoveryPresentation';
+
+const COMMENT_MAX = 500;
 
 interface StatusTimelineProps {
   discovery: DiscoveryDetail;
-  onSubmit: (isViolation: boolean) => void;
+  onSubmit: (isViolation: boolean, comment: string) => void;
 }
 
 function lineLabel(line: string, suffix?: string) {
-  const cyrillic = line.replace('L', 'Л');
+  const cyrillic = lineLabelCyrillic(line as 'L1' | 'L2' | 'L3');
   return suffix ? `${cyrillic} • ${suffix}` : cyrillic;
 }
 
 export function StatusTimeline({ discovery, onSubmit }: StatusTimelineProps) {
   const [choice, setChoice] = useState<'violation' | 'not_violation' | null>(null);
+  const [comment, setComment] = useState('');
+  const [submitted, setSubmitted] = useState(false);
   const l3User = discovery.currentReviewer;
+
+  const handleSubmit = () => {
+    if (!choice) return;
+    onSubmit(choice === 'violation', comment.trim());
+    setSubmitted(true);
+  };
+
+  const handleCancel = () => {
+    setSubmitted(false);
+    setChoice(null);
+    setComment('');
+  };
 
   return (
     <section className="figma-status-timeline">
@@ -61,38 +78,60 @@ export function StatusTimeline({ discovery, onSubmit }: StatusTimelineProps) {
                 <div className="figma-status-entry__role">{l3User.role}</div>
               </div>
             </div>
-            <p className="figma-status-entry__question">{discovery.evaluationQuestion}</p>
-            <div className="figma-eval-actions">
-              <button
-                type="button"
-                className={`figma-eval-btn${choice === 'violation' ? ' figma-eval-btn--active' : ''}`}
-                onClick={() => setChoice('violation')}
-              >
-                <span className="figma-eval-btn__icon">✓</span>
-                Это нарушение
-              </button>
-              <button
-                type="button"
-                className={`figma-eval-btn${choice === 'not_violation' ? ' figma-eval-btn--active' : ''}`}
-                onClick={() => setChoice('not_violation')}
-              >
-                <span className="figma-eval-btn__icon">✕</span>
-                Это не нарушение
-              </button>
-            </div>
-            <button
-              type="button"
-              className="figma-eval-submit"
-              disabled={!choice}
-              onClick={() => choice && onSubmit(choice === 'violation')}
-            >
-              Отправить
-            </button>
+
+            {submitted ? (
+              <div className="figma-eval-sent">
+                <span className="figma-eval-sent__label">Отправлено</span>
+                <button type="button" className="figma-eval-sent__cancel" onClick={handleCancel}>
+                  Отменить
+                </button>
+              </div>
+            ) : (
+              <>
+                <p className="figma-status-entry__question">{discovery.evaluationQuestion}</p>
+                <div className="figma-eval-actions">
+                  <button
+                    type="button"
+                    className={`figma-eval-btn${choice === 'violation' ? ' figma-eval-btn--active' : ''}`}
+                    onClick={() => setChoice('violation')}
+                  >
+                    <span className={`figma-eval-btn__check${choice === 'violation' ? ' is-checked' : ''}`} aria-hidden />
+                    Это нарушение
+                  </button>
+                  <button
+                    type="button"
+                    className={`figma-eval-btn${choice === 'not_violation' ? ' figma-eval-btn--active' : ''}`}
+                    onClick={() => setChoice('not_violation')}
+                  >
+                    <span className={`figma-eval-btn__check${choice === 'not_violation' ? ' is-checked' : ''}`} aria-hidden />
+                    Это не нарушение
+                  </button>
+                </div>
+                <textarea
+                  className="figma-eval-comment"
+                  placeholder="Комментарий (необязательно)"
+                  value={comment}
+                  maxLength={COMMENT_MAX}
+                  onChange={(e) => setComment(e.target.value)}
+                  rows={3}
+                />
+                <div className="figma-eval-comment__meta">
+                  {comment.length}/{COMMENT_MAX}
+                </div>
+                <button
+                  type="button"
+                  className="figma-eval-submit"
+                  disabled={!choice}
+                  onClick={handleSubmit}
+                >
+                  Отправить
+                </button>
+              </>
+            )}
           </div>
         </div>
       )}
 
-      {/* Figma reference layers (hidden, for pixel parity checks) */}
       <div className="figma-ref-hidden" aria-hidden>
         <img src={figmaAssets.statusL1} alt="" />
         <img src={figmaAssets.statusL2} alt="" />

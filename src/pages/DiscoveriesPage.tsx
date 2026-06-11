@@ -3,9 +3,18 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { figmaAssets } from '@/assets/figma';
 import { getCurrentUser, getDiscoveries } from '@/api/discoveries';
 import type { DiscoveriesListData, Discovery, UserProfile } from '@/types/discovery';
-import { getDiscoveryTableDateColumn } from '@/utils/discoveryPresentation';
+import {
+  getDiscoveryTableDateColumn,
+  showStatusColumn,
+  showViolatorsColumn,
+} from '@/utils/discoveryPresentation';
+import { formatViolatorsDisplay } from '@/utils/violators';
 
 const presets = ['Пресет', 'Пресет', 'Пресет'];
+const statusChips = [
+  { id: 'open', label: 'Открытые', active: true },
+  { id: 'closed', label: 'Закрытые', active: false },
+];
 
 function StatusCell({ item }: { item: Discovery }) {
   return (
@@ -23,11 +32,11 @@ export function DiscoveriesPage() {
   const tab = (params.get('tab') as 'all' | 'pending' | 'expiring') || 'all';
   const [data, setData] = useState<DiscoveriesListData | null>(null);
   const [user, setUser] = useState<UserProfile | null>(null);
+  const [search, setSearch] = useState('');
 
-  const dateColumn = useMemo(
-    () => (user ? getDiscoveryTableDateColumn(user.line) : null),
-    [user],
-  );
+  const dateColumn = useMemo(() => (user ? getDiscoveryTableDateColumn(user.line) : null), [user]);
+  const showStatus = user ? showStatusColumn(user.line) : true;
+  const showViolators = user ? showViolatorsColumn(user.line) : true;
 
   const openDiscovery = (id: string) => navigate(`/discoveries/${id}`);
 
@@ -35,6 +44,17 @@ export function DiscoveriesPage() {
     getCurrentUser().then(setUser);
     getDiscoveries(tab).then(setData);
   }, [tab]);
+
+  const filteredItems = useMemo(() => {
+    if (!data) return [];
+    const q = search.trim().toLowerCase();
+    if (!q) return data.items;
+    return data.items.filter(
+      (item) =>
+        item.id.toLowerCase().includes(q) ||
+        (item.suspectedViolation ?? item.violationType).toLowerCase().includes(q),
+    );
+  }, [data, search]);
 
   if (!data || !user || !dateColumn) return <div className="page-loading">Загрузка…</div>;
 
@@ -47,9 +67,26 @@ export function DiscoveriesPage() {
             {preset}
           </button>
         ))}
+        {statusChips.map((chip) => (
+          <button
+            key={chip.id}
+            type="button"
+            className={chip.active ? 'filter-chip filter-chip--active' : 'preset-btn'}
+          >
+            {chip.label}
+          </button>
+        ))}
         <button type="button" className="preset-btn">
           + Фильтр
         </button>
+        <input
+          type="search"
+          className="discoveries-search"
+          placeholder="Поиск по ID или нарушению…"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          aria-label="Поиск обнаружений"
+        />
       </div>
 
       <div className="data-table-wrap">
@@ -66,13 +103,13 @@ export function DiscoveriesPage() {
               <th>Тип</th>
               <th>Зона обнаружения</th>
               <th>Камера</th>
-              <th>Статус • Вы</th>
-              <th>Нарушители</th>
+              {showStatus && <th>Статус • Вы</th>}
+              {showViolators && <th>Нарушители</th>}
             </tr>
           </thead>
           <tbody>
-            {data.items.map((item) => {
-              const relative = dateColumn.getRelative(item);
+            {filteredItems.map((item) => {
+              const relative = dateColumn.showRelative ? dateColumn.getRelative(item) : '';
               return (
                 <tr
                   key={item.id}
@@ -93,9 +130,11 @@ export function DiscoveriesPage() {
                   </td>
                   <td>
                     <div>{dateColumn.getPrimary(item)}</div>
-                    <div className={`cell-relative${relative.includes('🔥') ? ' cell-relative--urgent' : ''}`}>
-                      {relative}
-                    </div>
+                    {dateColumn.showRelative && relative && (
+                      <div className={`cell-relative${relative.includes('🔥') ? ' cell-relative--urgent' : ''}`}>
+                        {relative}
+                      </div>
+                    )}
                   </td>
                   <td className="col-violation table-cell-link">{item.suspectedViolation ?? item.violationType}</td>
                   <td>{item.violationCategory}</td>
@@ -104,10 +143,12 @@ export function DiscoveriesPage() {
                     <div>{item.cameraId}</div>
                     <div className="cell-secondary">{item.cameraName}</div>
                   </td>
-                  <td>
-                    <StatusCell item={item} />
-                  </td>
-                  <td>{item.violators}</td>
+                  {showStatus && (
+                    <td>
+                      <StatusCell item={item} />
+                    </td>
+                  )}
+                  {showViolators && <td>{formatViolatorsDisplay(item.violators)}</td>}
                 </tr>
               );
             })}
